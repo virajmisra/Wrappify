@@ -5,11 +5,13 @@ import { useEffect, useState } from "react";
 export default function WrappedPage() {
   const router = useRouter();
   const { month } = router.query;
+  const isFromSavedPage = router.query.from === "saved";
   const [wrappedData, setWrappedData] = useState<{ tracks: any[], artists: any[] } | null>(null);
   const [loading, setLoading] = useState(true);
   const [saveMessage, setSaveMessage] = useState("");
   const [showSaveButton, setShowSaveButton] = useState(true);
   const [wrapAvailable, setWrapAvailable] = useState(true);
+  const [fadeOut, setFadeOut] = useState(false);
 
   useEffect(() => {
     if (!month) return;
@@ -45,8 +47,13 @@ export default function WrappedPage() {
       fetch(`/api/get-monthly-wrapped?month=${month}`)
         .then(res => res.json())
         .then(data => {
-          if (data && data.top_tracks && data.top_tracks.length > 0) {
-            setSaveMessage("Saved");
+          const savedWrap = data.savedWrap || {};
+          if (
+            (savedWrap.top_tracks?.length > 0) ||
+            (savedWrap.top_artists?.length > 0)
+          ) {
+            setSaveMessage("This wrap has been saved");
+            setShowSaveButton(false);
           }
         })
         .catch(() => { /* ignore errors */ });
@@ -54,11 +61,19 @@ export default function WrappedPage() {
       fetch(`/api/get-monthly-wrapped?month=${month}`)
         .then(res => res.json())
         .then(data => {
+          const savedWrap = data.savedWrap || {};
           setWrappedData({
-            tracks: data.top_tracks || [],
-            artists: data.top_artists || [],
+            tracks: savedWrap.top_tracks || [],
+            artists: savedWrap.top_artists || [],
           });
           setLoading(false);
+          if (
+            (savedWrap.top_tracks?.length > 0) ||
+            (savedWrap.top_artists?.length > 0)
+          ) {
+            setSaveMessage("This wrap has been saved");
+            setShowSaveButton(false);
+          }
         });
     }
   }, [month]);
@@ -66,6 +81,7 @@ export default function WrappedPage() {
   const saveWrapped = async () => {
     if (!wrappedData || !month) return;
     setSaveMessage("Saving...");
+    setFadeOut(false);
 
     try {
       const res = await fetch("/api/save-monthly-wrapped", {
@@ -80,11 +96,9 @@ export default function WrappedPage() {
 
       const data = await res.json();
       if (res.ok) {
-        setSaveMessage("Saved!");
-        setTimeout(() => {
-          setSaveMessage("");
-          setShowSaveButton(false);
-        }, 3000);
+        setSaveMessage("Saved.");
+        setTimeout(() => setFadeOut(true), 1500);
+        setTimeout(() => setShowSaveButton(false), 2500);
       } else {
         setSaveMessage(data.error || "Failed to save wrapped.");
       }
@@ -118,7 +132,7 @@ export default function WrappedPage() {
       style={{
         display: "flex",
         height: "100vh",
-        backgroundColor: "#121212",
+        background: "linear-gradient(to bottom right, #121212, #1DB95420)",
         color: "white",
         fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
         overflow: "hidden",
@@ -151,6 +165,9 @@ export default function WrappedPage() {
   alignItems: "center",
   gap: "1rem"
 }}>
+  <div style={{ fontWeight: "bold", minWidth: "24px", textAlign: "right" }}>
+    {index + 1}.
+  </div>
   {track.album?.images?.[0]?.url && (
     <img
       src={track.album.images[0].url}
@@ -242,26 +259,27 @@ export default function WrappedPage() {
               ← Home
             </Link>
 
-            {month === new Date().toISOString().slice(0, 7) && showSaveButton && wrapAvailable && (
+            {month === new Date().toISOString().slice(0, 7) && showSaveButton && wrapAvailable && !isFromSavedPage && (
               <button
                 onClick={saveWrapped}
                 disabled={saveMessage === "Saving..."}
                 style={{
-                  backgroundColor: saveMessage === "Saved" ? "#444" : "#1DB954",
+                  backgroundColor: fadeOut ? "#444" : "#1DB954",
                   border: "none",
                   borderRadius: "25px",
                   color: "black",
                   fontWeight: "bold",
                   fontSize: "1rem",
                   padding: "0.5rem 2rem",
-                  cursor: saveMessage === "Saved" ? "default" : "pointer",
-                  transition: "background-color 0.3s ease",
+                  cursor: saveMessage === "Saved." ? "default" : "pointer",
+                  transition: "background-color 0.3s ease, opacity 0.5s ease",
+                  opacity: fadeOut ? 0 : 1,
                 }}
                 onMouseEnter={(e) => {
-                  if (saveMessage !== "Saved") e.currentTarget.style.backgroundColor = "#1ed760";
+                  if (!fadeOut && saveMessage !== "Saved.") e.currentTarget.style.backgroundColor = "#1ed760";
                 }}
                 onMouseLeave={(e) => {
-                  if (saveMessage !== "Saved") e.currentTarget.style.backgroundColor = "#1DB954";
+                  if (!fadeOut && saveMessage !== "Saved.") e.currentTarget.style.backgroundColor = "#1DB954";
                 }}
               >
                 {saveMessage || "Save This Month's Wrapped"}
