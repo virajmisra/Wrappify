@@ -20,10 +20,10 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-        if (session.user) {
-            (session as any).accessToken = token.accessToken;
-        }
-        return session;
+      if (session.user) {
+        (session as any).accessToken = token.accessToken;
+      }
+      return session;
     },
   },
 };
