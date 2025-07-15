@@ -7,13 +7,16 @@ export const authOptions: NextAuthOptions = {
     SpotifyProvider({
       clientId: process.env.SPOTIFY_CLIENT_ID!,
       clientSecret: process.env.SPOTIFY_CLIENT_SECRET!,
-      authorization: "https://accounts.spotify.com/authorize?scope=user-top-read user-read-recently-played",
+      authorization:
+        "https://accounts.spotify.com/authorize?scope=user-top-read user-read-recently-played",
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET,
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
     async jwt({ token, account }) {
-      // Save access token when user logs in
       if (account) {
         token.accessToken = account.access_token;
       }
@@ -31,8 +34,8 @@ export const authOptions: NextAuthOptions = {
       name: `__Secure-next-auth.session-token`,
       options: {
         httpOnly: true,
-        sameSite: 'none',
-        path: '/',
+        sameSite: "none",
+        path: "/",
         secure: true,
       },
     },
