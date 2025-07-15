@@ -1,0 +1,31 @@
+import NextAuth from "next-auth";
+import SpotifyProvider from "next-auth/providers/spotify";
+import type { NextAuthOptions } from "next-auth";
+
+export const authOptions: NextAuthOptions = {
+  providers: [
+    SpotifyProvider({
+      clientId: process.env.SPOTIFY_CLIENT_ID!,
+      clientSecret: process.env.SPOTIFY_CLIENT_SECRET!,
+      authorization: "https://accounts.spotify.com/authorize?scope=user-top-read user-read-recently-played",
+    }),
+  ],
+  secret: process.env.NEXTAUTH_SECRET,
+  callbacks: {
+    async jwt({ token, account }) {
+      // Save access token when user logs in
+      if (account) {
+        token.accessToken = account.access_token;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+        if (session.user) {
+            (session as any).accessToken = token.accessToken;
+        }
+        return session;
+    },
+  },
+};
+
+export default NextAuth(authOptions);
