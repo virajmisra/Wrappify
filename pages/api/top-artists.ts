@@ -1,16 +1,19 @@
-import { getToken } from "next-auth/jwt";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "./auth/[...nextauth]";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const token = await getToken({ req });
+  const session = await getServerSession(req, res, authOptions);
 
-  if (!token || !token.accessToken) {
-    return res.status(401).json({ error: "Not authenticated" });
+  if (!session || !(session as any).accessToken) {
+    return res.status(401).json({ error: "No token provided" });
   }
+
+  const accessToken = (session as any).accessToken;
 
   const response = await fetch("https://api.spotify.com/v1/me/top/artists?limit=10&time_range=short_term", {
     headers: {
-      Authorization: `Bearer ${token.accessToken}`,
+      Authorization: `Bearer ${accessToken}`,
     },
   });
 
