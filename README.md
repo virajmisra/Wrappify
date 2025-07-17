@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+#  Wrappify
 
-## Getting Started
+**Spotify Wrapped — every month.**
 
-First, run the development server:
+Wrappify is a web app that lets Spotify users generate and save their personal "Spotify Wrapped" at the end of each month, where they can see their top tracks and artists, save monthly snapshots, and revisit their wraps anytime.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Spotify authentication** via NextAuth.js
+- **Monthly wrap** of top tracks and artists (based on Spotify short-term data)
+- **Save and revisit** past wraps using Supabase
+- **Smooth UI animations** and responsive layout with CSS-in-JS
+- **Server-side rendering** for fast loads and SEO
+- **Deployed on Vercel** for public access
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## Tech Stack
 
-To learn more about Next.js, take a look at the following resources:
+- **Next.js** (App Framework)
+- **React** (Frontend UI)
+- **NextAuth.js** (Spotify OAuth)
+- **Supabase** (Database + Auth)
+- **Vercel** (Hosting & CI)
+- **Spotify Web API** (Data source)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## To use
 
-## Deploy on Vercel
+1. **Clone the repo**
+   ```bash
+   git clone https://github.com/virajmisra/wrappify
+   cd wrappify
+   npm install
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+2. **Create `.env.local`**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+   ```
+   NEXTAUTH_URL=http://localhost:3000
+   NEXTAUTH_SECRET=your_nextauth_secret
+
+   SPOTIFY_CLIENT_ID=your_spotify_client_id
+   SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
+
+   SUPABASE_URL=your_supabase_url
+   SUPABASE_KEY=your_supabase_anon_key
+   ```
+
+3. **Run the app**
+   ```bash
+   npm run dev
+   ```
+
+---
+
+## Limitations
+
+Due to Spotify API limitations in developer mode:
+- Only **25 test users** can be added to the app
+- You must manually add each tester via the Spotify Developer Dashboard - email me and include your Spotify email to be added.
+- The Wrapped becomes available only on the **29th of each month**
+
+---
+
+## Visit the app (Best viewed on desktop)
+
+Live app: [https://wrappify-six.vercel.app](https://wrappify-six.vercel.app)
+
+---
+
+## Author
+
+Built by [Viraj Misra](https://www.linkedin.com/in/viraj-misra/) — feel free to connect!
