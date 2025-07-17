@@ -115,18 +115,50 @@ export default function WrappedPage() {
       <div
         style={{
           height: "100vh",
-          backgroundColor: "#121212",
+          background: "linear-gradient(to bottom right, #121212, #1DB95420)",
           color: "white",
+          fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
           display: "flex",
+          flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
-          padding: "2rem",
           textAlign: "center",
-          fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
-          fontSize: "1.5rem",
+          padding: "2rem",
         }}
       >
-        This month's Wrapped will be available after the 29th.
+        <h2
+          style={{
+            fontSize: "1.8rem",
+            marginBottom: "2rem",
+            color: "#1DB954",
+            animation: "fadeIn 1s ease forwards",
+          }}
+        >
+          This month's Wrapped will be available after the 29th.
+        </h2>
+        <Link
+          href="/"
+          style={{
+            backgroundColor: "#1DB954",
+            borderRadius: "25px",
+            color: "black",
+            fontWeight: "bold",
+            fontSize: "1rem",
+            padding: "0.5rem 2rem",
+            border: "none",
+            cursor: "pointer",
+            textDecoration: "none",
+            transition: "transform 0.3s ease, opacity 0.5s ease",
+            animation: "fadeIn 1s ease forwards",
+            animationDelay: "1s",
+            opacity: 0,
+            animationFillMode: "forwards"
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
+          onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+        >
+          ← Home
+        </Link>
       </div>
     );
   }
