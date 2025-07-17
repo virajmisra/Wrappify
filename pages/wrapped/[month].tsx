@@ -134,7 +134,7 @@ export default function WrappedPage() {
             animation: "fadeIn 1s ease forwards",
           }}
         >
-          This month's Wrapped will be available after the 29th.
+          This month's Wrapped will be available on the 29th.
         </h2>
         <Link
           href="/"
