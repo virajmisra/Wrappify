@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 export default function WrappedPage() {
   const router = useRouter();
   const { month } = router.query;
+  const today = new Date();
+  const currentMonth = today.toISOString().slice(0, 7);
   const isFromSavedPage = router.query.from === "saved";
   const [wrappedData, setWrappedData] = useState<{ tracks: any[], artists: any[] } | null>(null);
   const [loading, setLoading] = useState(true);
@@ -14,24 +16,18 @@ export default function WrappedPage() {
   const [fadeOut, setFadeOut] = useState(false);
 
   useEffect(() => {
-    if (!month) return;
+    if (!router.isReady || !month) return;
 
-    const today = new Date();
-    const currentMonth = today.toISOString().slice(0, 7);
-    // const isCurrentMonth = month === currentMonth;
-    // const isBefore29th = today.getDate() < 29;
+    const isCurrentMonth = month === currentMonth;
+    const isBefore29th = today.getDate() < 29;
 
-    // if (isCurrentMonth && isBefore29th) {
-    //   setWrapAvailable(false);
-    //   setLoading(false);
-    //   return;
-    // } else {
-    //   setWrapAvailable(true);
-    // }
-    setWrapAvailable(true);
+    if (isCurrentMonth && isBefore29th) {
+      setWrapAvailable(false);
+      setLoading(false);
+      return;
+    }
 
-    if (month === today.toISOString().slice(0, 7)) {
-      // TEMP: fetch live short term data for testing
+    if (isCurrentMonth) {
       Promise.all([
         fetch("/api/top-tracks").then(res => res.json()),
         fetch("/api/top-artists").then(res => res.json()),
@@ -43,7 +39,6 @@ export default function WrappedPage() {
         setLoading(false);
       });
 
-      // Check if already saved this month
       fetch(`/api/get-monthly-wrapped?month=${month}`)
         .then(res => res.json())
         .then(data => {
@@ -56,7 +51,7 @@ export default function WrappedPage() {
             setShowSaveButton(false);
           }
         })
-        .catch(() => { /* ignore errors */ });
+        .catch(() => {});
     } else {
       fetch(`/api/get-monthly-wrapped?month=${month}`)
         .then(res => res.json())
@@ -76,7 +71,7 @@ export default function WrappedPage() {
           }
         });
     }
-  }, [month]);
+  }, [router.isReady, month]);
 
   const saveWrapped = async () => {
     if (!wrappedData || !month) return;
@@ -115,16 +110,29 @@ export default function WrappedPage() {
     );
   }
 
-  // if (!wrapAvailable) {
-  //   return (
-  //     <div style={{ height: "100vh", backgroundColor: "#121212", color: "white", display: "flex", justifyContent: "center", alignItems: "center", padding: "2rem", textAlign: "center" }}>
-  //       <h2>This month's Wrapped will be available on the 29th.</h2>
-  //     </div>
-  //   );
-  // }
+  if (!wrapAvailable) {
+    return (
+      <div
+        style={{
+          height: "100vh",
+          backgroundColor: "#121212",
+          color: "white",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          padding: "2rem",
+          textAlign: "center",
+          fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
+          fontSize: "1.5rem",
+        }}
+      >
+        This month's Wrapped will be available after the 29th.
+      </div>
+    );
+  }
 
   if (!wrappedData) {
-    return <p>Unable to load wrapped data.</p>;
+    return <p style={{ color: "white" }}>Unable to load wrapped data.</p>;
   }
 
   return (
@@ -259,7 +267,7 @@ export default function WrappedPage() {
               ← Home
             </Link>
 
-            {month === new Date().toISOString().slice(0, 7) && showSaveButton && wrapAvailable && !isFromSavedPage && (
+            {month === currentMonth && showSaveButton && wrapAvailable && !isFromSavedPage && (
               <button
                 onClick={saveWrapped}
                 disabled={saveMessage === "Saving..."}
