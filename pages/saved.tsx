@@ -51,7 +51,16 @@ export default function SavedWrapped() {
       {loading && <p>Loading...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
       {success && <p style={{ color: "#1DB954" }}>{success}</p>}
-      {!loading && savedWraps.length === 0 && <p>No saved wraps found.</p>}
+      {!loading && savedWraps.length === 0 && (
+        <p style={{
+          color: "#1DB954",
+          animation: "fadeIn 1s ease forwards",
+          animationDelay: "0.5s",
+          opacity: 0
+        }}>
+          No saved wraps found - save them to view here.
+        </p>
+      )}
 
       <ul style={{ listStyle: "none", paddingLeft: 0 }}>
         {savedWraps.map(({ month }, index) => {
