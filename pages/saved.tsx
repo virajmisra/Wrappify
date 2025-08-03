@@ -64,7 +64,9 @@ export default function SavedWrapped() {
 
       <ul style={{ listStyle: "none", paddingLeft: 0 }}>
         {savedWraps.map(({ month }, index) => {
-          const monthName = new Date(`${month}-01`).toLocaleString("default", { month: "long", year: "numeric" });
+          const [year, monthNum] = month.split("-");
+          const date = new Date(Number(year), Number(monthNum) - 1);
+          const monthName = date.toLocaleString("default", { month: "long", year: "numeric" });
           return (
             <li
               key={month}
